@@ -8,6 +8,7 @@ RUN apt install -y libusb-1.0-0-dev build-essential libsane-dev \
 	&& apt install -y libavahi-client-dev libavahi-glib-dev \
 	&& apt install -y git-core openssh-server \
 	&& apt install -y autoconf libtool \
+	&& apt install -y python3-pip python3-setuptools \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Compile SANE Backend.
@@ -32,6 +33,14 @@ RUN set -eu; \
 
 # 22 for ssh server
 EXPOSE 22
+
+# Support Conan package
+RUN set -eux; \
+    $(which python3); \
+    ln -sf $(which python3) /usr/bin/python; \
+    ln -sf $(which pip3) /usr/bin/pip;
+
+RUN pip install --upgrade pip && pip install --no-cache-dir conan
 
 # Set environment variables.
 ENV HOME /root
