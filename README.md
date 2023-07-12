@@ -2,22 +2,22 @@
 
 ## Base Docker Image
 
-* [aoqi/debian-mips64el](https://hub.docker.com/r/aoqi/debian-mips64el)
+* cr.loongnix.cn/library/debian:buster-slim
 
 ## Build
 
 ```bash
-docker build --rm -t "vswteam/sane-backend-debian-mips64el" .
+docker build --rm -t "vswteam/sane-backend-debian-loongarch64" .
 ```
 
 ## Download
 
 ```bash
-docker pull vswteam/sane-backend-debian-mips64el
+docker pull vswteam/sane-backend-debian-loongarch64
 ```
 
 ## Usage
 
 ```bash
-docker run -it -v <sane-backend-volume>:/root/project vswteam/sane-backend-debian-mips64el /bin/bash
+docker run -it -v <sane-backend-volume>:/root/project vswteam/sane-backend-debian-loongarch64 /bin/bash
 ```

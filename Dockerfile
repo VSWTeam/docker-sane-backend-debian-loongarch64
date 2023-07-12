@@ -1,10 +1,9 @@
-FROM multiarch/qemu-user-static:x86_64-mips64el as qemu
-FROM aoqi/debian-mips64el
-COPY --from=qemu /usr/bin/qemu-mips64el-static /usr/bin
+FROM multiarch/qemu-user-static:x86_64-loongarch64 as qemu
+FROM cr.loongnix.cn/library/debian:buster-slim
+COPY --from=qemu /usr/bin/qemu-loongarch64-static /usr/bin
 
-RUN apt update
-
-RUN apt install -y libusb-1.0-0-dev build-essential libsane-dev \
+RUN apt update \
+    && apt install -y libusb-1.0-0-dev build-essential libsane-dev \
 	&& apt install -y libavahi-client-dev libavahi-glib-dev \
 	&& apt install -y git-core openssh-server \
 	&& apt install -y autoconf libtool \
@@ -17,7 +16,8 @@ RUN cd root \
 	&& git clone https://gitlab.com/sane-project/backends.git sane-backends \
 	&& cd sane-backends \
 	&& git checkout RELEASE_1_0_27 \
-	&& ./configure --prefix=/usr --libdir=/usr/lib/mips64el-linux-gnuabi64 --sysconfdir=/etc --localstatedir=/var  --enable-avahi BACKENDS="kodakaio test" \
+    && rm -rf .git \
+	&& ./configure --build=loongarch64-unknown-linux-gnu --prefix=/usr --libdir=/usr/lib/loongarch64-linux-gnu --sysconfdir=/etc --localstatedir=/var  --enable-avahi BACKENDS="kodakaio test" \
 	&& make
 
 # Create a symbolic link for backend develop.
@@ -41,7 +41,11 @@ RUN set -eux; \
     ln -sf $(which python3) /usr/bin/python; \
     ln -sf $(which pip3) /usr/bin/pip;
 
-RUN pip install --upgrade pip && pip install --no-cache-dir conan
+RUN pip config set global.extra-index-url https://pypi.org/simple \
+    && pip config set global.index-url https://pypi.org/simple \
+    && pip install --force-reinstall -v "conan==1.47.0" \
+    && conan profile new default --detect \
+    && conan profile update settings.arch=mips default
 
 # Set environment variables.
 ENV HOME /root
